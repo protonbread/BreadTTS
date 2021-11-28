@@ -10,7 +10,7 @@ resolution = '1080x1920'
 batch = 10
 commentbatch = 2
 
-post = {}
+postdict = {}
 titles = []
 
 disallowedids = []
@@ -72,4 +72,14 @@ for i in filteredpostids:
         filteredpostids.remove(i)
 
 lastid = filteredpostids[len(filteredpostids)-1]
+
+for (postid, posttitle) in zip(filteredpostids, titles):
+    postdict.update({postid: posttitle})
+
+for i in filteredurls:
+    pass
+
+
 print(f"[!]Got {len(titles)} Posts And ")
+
+#r = s.get('')
