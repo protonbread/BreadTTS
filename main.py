@@ -7,8 +7,9 @@ import itertools
 os.system('cls' if os.name == 'nt' else 'clear')
 
 resolution = '1080x1920'
-batch = 30
+batch = 3
 comment_batch = 2
+thread_batch = 2
 
 post_dict = {}
 titles = []
@@ -38,9 +39,6 @@ for i in itertools.islice(post_json['posts'], batch):
     post_urls.append(post_json['posts'][i]['permalink'])
     post_ids.append(post_json['posts'][i]['id'])
 
-donotreadlist = open('./donotread.txt', 'a+')
-alreadyread = open('./alreadyread.txt', 'a+')
-
 donotread = [item for item, count in collections.Counter(titles).items() if count > 1]
 titles = [elem for elem in titles if elem not in donotread]
 
@@ -59,14 +57,18 @@ for i in post_ids[:]:
     if '=' in i:
         post_ids.remove(i)
 
-lastid = post_ids[len(post_ids)-1]
+last_id = post_ids[len(post_ids)-1]
 
 for (posturl, posttitle) in zip(post_urls, titles):
     post_dict.update({posturl: posttitle})
 
-#for i in filteredurls:
-#    pass
+comment_sel = '._1qeIAgB0cPwnLhDF9XSiJM'
 
+for i in itertools.islice(post_urls, comment_batch):
+    url = s.get(i)
+    comment = url.html.find(comment_sel)
+    for i in comment:
+        print(i.text)
 
 print(f"[!]Got {len(titles)} Posts And ")
 
