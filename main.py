@@ -7,7 +7,7 @@ import itertools
 os.system('cls' if os.name == 'nt' else 'clear')
 
 resolution = '1080x1920'
-batch = 3
+batch = 5
 comment_batch = 2
 thread_batch = 2
 
@@ -27,6 +27,7 @@ github.com/protonbread
 [Resolution: {resolution}]
 [Post Count: {batch}]
 [Comment Count: {comment_batch}]
+[Reply Count: {thread_batch}]
 ═══════════════════════
 """)
 
@@ -36,7 +37,7 @@ post_json = r.json()
 print('[%]Scraping Reddit...')
 for i in itertools.islice(post_json['posts'], batch):
     titles.append(post_json['posts'][i]['title'])
-    post_urls.append(post_json['posts'][i]['permalink'])
+    post_urls.append(f'{post_json["posts"][i]["permalink"]}.json')
     post_ids.append(post_json['posts'][i]['id'])
 
 donotread = [item for item, count in collections.Counter(titles).items() if count > 1]
@@ -62,14 +63,33 @@ last_id = post_ids[len(post_ids)-1]
 for (posturl, posttitle) in zip(post_urls, titles):
     post_dict.update({posturl: posttitle})
 
-comment_sel = '._1qeIAgB0cPwnLhDF9XSiJM'
+comment_replys = []
+comments = {}
 
-for i in itertools.islice(post_urls, comment_batch):
-    url = s.get(i)
-    comment = url.html.find(comment_sel)
-    for i in comment:
-        print(i.text)
+for u in post_urls:
+    post_json = s.get(u).json()
+    comment_data = post_json[1]['data']['children'][post_urls.index(u)]['data']
 
-print(f"[!]Got {len(titles)} Posts And ")
+    for r in range(comment_batch):
 
+        reply_data = post_json[1]['data']['children'][r]['data']
+        comment_author = (reply_data['author'])
+        comment_body = (reply_data['body'])
+
+        for i in range(thread_batch):
+            try:
+                comment_replys.append(reply_data['replies']['data']['children'][i]['data']['body'])
+                comments.update({comment_author: {u:{comment_body: comment_replys}}})
+                comment_replys.clear()
+                
+            except:
+                print('[*]Reply Not In Range')
+                #comment_reply.append(comment_data['replies']['data']['children'][post_urls.])
+            print(comment_replys)
+            #print(comments)
+
+    
+
+print(f"[!]Got {len(titles)} Posts And {len(comments)} Threads")
+print(comments)
 #r = s.get('')
