@@ -79,13 +79,11 @@ for u in post_urls:
         for i in range(thread_batch):
             try:
                 comment_replys.append(reply_data['replies']['data']['children'][i]['data']['body'])
-                comments.update({comment_author: {u:{comment_body: comment_replys}}})
-                comment_replys.clear()
-                
+                comments.update({u: {comment_author:{comment_body: str(comment_replys)}}})                
             except:
                 print('[*]Reply Not In Range')
                 #comment_reply.append(comment_data['replies']['data']['children'][post_urls.])
-            print(comment_replys)
+        comment_replys.clear()
             #print(comments)
 
     
