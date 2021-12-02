@@ -7,7 +7,7 @@ import itertools
 os.system('cls' if os.name == 'nt' else 'clear')
 
 resolution = '1080x1920'
-batch = 5
+batch = 15
 comment_batch = 2
 thread_batch = 2
 
@@ -31,14 +31,15 @@ github.com/protonbread
 ═══════════════════════
 """)
 
-url = 'https://gateway.reddit.com/desktopapi/v1/subreddits/AskReddit?rtj=only&redditWebClient=web2x&app=web2x-client-production&allow_over18=&include=prefsSubreddit&dist=8&forceGeopopular=false&layout=card&sort=hot'
+url = 'https://reddit.com/r/askreddit.json'
 r = s.get(url)
-post_json = r.json()
+post_json = r.json()['data']
 print('[%]Scraping Reddit...')
-for i in itertools.islice(post_json['posts'], batch):
-    titles.append(post_json['posts'][i]['title'])
-    post_urls.append(f'{post_json["posts"][i]["permalink"]}.json')
-    post_ids.append(post_json['posts'][i]['id'])
+for i in range(comment_batch):
+    titles.append(post_json['children'][i]['title'])
+    print(titles)
+    post_urls.append(f'{post_json["children"][i]["url"]}.json')
+    post_ids.append(post_json['children'][i]['id'])
 
 donotread = [item for item, count in collections.Counter(titles).items() if count > 1]
 titles = [elem for elem in titles if elem not in donotread]
@@ -81,7 +82,7 @@ for u in post_urls:
                 comment_replys.append(reply_data['replies']['data']['children'][i]['data']['body'])
             except:
                 print('[*]Reply Not In Range')
-            comments.update({u:{comment_author:{comment_body: list(comment_replys)}}})                
+            comments.update({comment_author:{u:{comment_body: list(comment_replys)}}})                
         comment_replys.clear()
     
 
