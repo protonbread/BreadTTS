@@ -33,13 +33,14 @@ github.com/protonbread
 
 url = 'https://reddit.com/r/askreddit.json'
 r = s.get(url)
-post_json = r.json()['data']
+post_json = r.json()
+
 print('[%]Scraping Reddit...')
 for i in range(comment_batch):
-    titles.append(post_json['children'][i]['title'])
+    titles.append(post_json['data']['children'][i]['data']['title'])
     print(titles)
-    post_urls.append(f'{post_json["children"][i]["url"]}.json')
-    post_ids.append(post_json['children'][i]['id'])
+    post_urls.append(f'{post_json["data"]["children"][i]["data"]["url"]}.json')
+    post_ids.append(post_json['data']['children'][i]['data']['id'])
 
 donotread = [item for item, count in collections.Counter(titles).items() if count > 1]
 titles = [elem for elem in titles if elem not in donotread]
